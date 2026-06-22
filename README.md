@@ -1,2 +1,5 @@
-# cloud-nexus
-axentx product · A cloud transformation planning and execution platform that bridges the gap between business objectives and technical implementation.
+# Validation System
+A Python package for running automated validation tests against generated specs.
+
+## Installation
+To install the package, run:
