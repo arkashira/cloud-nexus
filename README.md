@@ -1,5 +1,5 @@
-# Validation System
-A Python package for running automated validation tests against generated specs.
+# Cloud Nexus
+A Python project for parsing business briefs and extracting key objectives.
 
 ## Installation
-To install the package, run:
+To install the project, run the following command:
