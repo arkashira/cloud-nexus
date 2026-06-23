@@ -1,8 +1,10 @@
 # Cloud Nexus
-Cloud Nexus is a system for validating plans against architecture patterns and cost benchmarks.
+A Python project for validating architecture plans against a curated pattern library.
 
 ## Usage
-To use Cloud Nexus, simply call the `validate_plan_against_patterns_and_benchmarks` function with your plan, architecture patterns, and cost benchmarks.
+1. Create an instance of the `CloudNexus` class.
+2. Call the `validate_plan` method with a project name and plan.
+3. Get the validation results using the `get_validation_results` method.
 
 ## Testing
-To run the tests, use the command `python -m pytest`.
+Run the tests using `pytest` to ensure the implementation is correct.

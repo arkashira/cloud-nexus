@@ -1,24 +1,27 @@
-import pytest
-import json
-from cloud_nexus import extract_key_objectives, validate_brief_size
+from cloud_nexus import CloudNexus
 
-def test_extract_key_objectives():
-    brief = """Objective: Increase sales
-KPI: 10% increase in revenue
-Objective: Improve customer satisfaction
-KPI: 90% customer satisfaction rate"""
-    result = extract_key_objectives(brief)
-    assert json.loads(result) == [{"objective": "Increase sales", "kpi": "10% increase in revenue"}, {"objective": "Improve customer satisfaction", "kpi": "90% customer satisfaction rate"}]
+def test_validate_plan_pass():
+    nexus = CloudNexus()
+    project_name = "Test Project"
+    plan = "This is a microservices architecture"
+    assert nexus.validate_plan(project_name, plan) == True
+    assert nexus.get_validation_results(project_name) == ["Pass", "Pattern Microservices found"]
 
-def test_extract_key_objectives_empty_brief():
-    brief = ""
-    result = extract_key_objectives(brief)
-    assert json.loads(result) == []
+def test_validate_plan_fail():
+    nexus = CloudNexus()
+    project_name = "Test Project"
+    plan = "This is a custom architecture"
+    assert nexus.validate_plan(project_name, plan) == False
+    assert nexus.get_validation_results(project_name) == ["Fail", "No pattern found"]
 
-def test_validate_brief_size():
-    brief = "a" * (5 * 1024 * 1024)
-    assert validate_brief_size(brief) == True
+def test_get_validation_results():
+    nexus = CloudNexus()
+    project_name = "Test Project"
+    plan = "This is a microservices architecture"
+    nexus.validate_plan(project_name, plan)
+    assert nexus.get_validation_results(project_name) == ["Pass", "Pattern Microservices found"]
 
-def test_validate_brief_size_too_large():
-    brief = "a" * (5 * 1024 * 1024 + 1)
-    assert validate_brief_size(brief) == False
+def test_get_validation_results_non_existent_project():
+    nexus = CloudNexus()
+    project_name = "Non Existent Project"
+    assert nexus.get_validation_results(project_name) == None

@@ -3,28 +3,33 @@ from dataclasses import dataclass
 from typing import List
 
 @dataclass
-class BusinessObjective:
-    objective: str
-    kpi: str
+class Pattern:
+    name: str
+    description: str
 
-def parse_brief(brief: str) -> List[BusinessObjective]:
-    objectives = []
-    lines = brief.splitlines()
-    for line in lines:
-        if line.startswith("Objective:"):
-            objective = line.split(":")[1].strip()
-            kpi = None
-            for next_line in lines[lines.index(line) + 1:]:
-                if next_line.startswith("KPI:"):
-                    kpi = next_line.split(":")[1].strip()
-                    break
-            if kpi:
-                objectives.append(BusinessObjective(objective, kpi))
-    return objectives
+@dataclass
+class Project:
+    name: str
+    plan: str
+    validation_results: List[str] = None
 
-def extract_key_objectives(brief: str) -> str:
-    objectives = parse_brief(brief)
-    return json.dumps([{"objective": obj.objective, "kpi": obj.kpi} for obj in objectives])
+class CloudNexus:
+    def __init__(self):
+        self.pattern_library = [
+            Pattern("Microservices", "A microservices architecture pattern"),
+            Pattern("Monolithic", "A monolithic architecture pattern")
+        ]
+        self.projects = {}
 
-def validate_brief_size(brief: str) -> bool:
-    return len(brief.encode("utf-8")) <= 5 * 1024 * 1024
+    def validate_plan(self, project_name: str, plan: str) -> bool:
+        for pattern in self.pattern_library:
+            if pattern.name.lower() in plan.lower():
+                self.projects[project_name] = Project(project_name, plan)
+                self.projects[project_name].validation_results = ["Pass", f"Pattern {pattern.name} found"]
+                return True
+        self.projects[project_name] = Project(project_name, plan)
+        self.projects[project_name].validation_results = ["Fail", "No pattern found"]
+        return False
+
+    def get_validation_results(self, project_name: str) -> List[str]:
+        return self.projects.get(project_name, Project(project_name, "")).validation_results
