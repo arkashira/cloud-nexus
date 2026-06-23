@@ -6,7 +6,6 @@ build-backend = "poetry.masonry.api"
 name = "cloud-nexus"
 version = "1.0.0"
 description = ""
-authors = ["Your Name"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
