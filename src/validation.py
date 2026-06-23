@@ -1,54 +1,29 @@
 import json
 from dataclasses import dataclass
-from enum import Enum
-from typing import List
-
-class ValidationType(str, Enum):
-    PERFORMANCE = "performance"
-    COST = "cost"
-    SECURITY = "security"
-    # Add more types as needed
+from typing import Dict, List
 
 @dataclass
-class ValidationTest:
-    type: ValidationType
-    spec: dict
-    probability: float
+class ValidationReport:
+    pass_flag: bool
+    report: str
+    remediation_suggestions: List[str]
 
-class ValidationSystem:
-    def __init__(self):
-        self.validation_tests = []
+def validate_plan(architecture_patterns: Dict, cost_benchmarks: Dict, plan: Dict) -> ValidationReport:
+    pass_flag = True
+    report = ""
+    remediation_suggestions = []
+    for pattern, requirements in architecture_patterns.items():
+        unmet_requirements = [requirement for requirement in requirements if not plan.get(requirement)]
+        if unmet_requirements:
+            pass_flag = False
+            report += f"Plan does not meet {pattern} architecture pattern requirements.\n"
+            remediation_suggestions.append(f"Add {', '.join(unmet_requirements)} to the plan.")
+    for benchmark, cost in cost_benchmarks.items():
+        if plan.get("cost") > cost:
+            pass_flag = False
+            report += f"Plan exceeds {benchmark} cost benchmark.\n"
+            remediation_suggestions.append(f"Reduce plan cost to {cost} or less.")
+    return ValidationReport(pass_flag, report, remediation_suggestions)
 
-    def add_test(self, test: ValidationTest):
-        self.validation_tests.append(test)
-
-    def run_tests(self) -> List[dict]:
-        results = []
-        for test in self.validation_tests:
-            result = self._run_test(test)
-            results.append(result)
-        return results
-
-    def _run_test(self, test: ValidationTest) -> dict:
-        # Simulate test execution
-        if test.type == ValidationType.PERFORMANCE:
-            return {"test": test.type, "result": test.probability > 0.8}
-        elif test.type == ValidationType.COST:
-            return {"test": test.type, "result": test.probability > 0.7}
-        elif test.type == ValidationType.SECURITY:
-            return {"test": test.type, "result": test.probability > 0.9}
-        else:
-            raise ValueError(f"Unknown validation type: {test.type}")
-
-    def generate_report(self, results: List[dict]) -> str:
-        report = ""
-        for result in results:
-            report += f"Test {result['test'].value} passed: {result['result']}\n"
-        return report
-
-    def flag_specs(self, results: List[dict]) -> List[dict]:
-        flagged_specs = []
-        for result in results:
-            if not result["result"]:
-                flagged_specs.append({"spec": result["test"], "probability": 0.0})
-        return flagged_specs
+def validate_plan_against_patterns_and_benchmarks(architecture_patterns: Dict, cost_benchmarks: Dict, plan: Dict) -> ValidationReport:
+    return validate_plan(architecture_patterns, cost_benchmarks, plan)

@@ -1,14 +1,8 @@
 # Cloud Nexus
-
-A simple Python project for providing feedback on plan quality and triggering a retraining job for the NLP model.
+Cloud Nexus is a system for validating plans against architecture patterns and cost benchmarks.
 
 ## Usage
-
-1. Create a `CloudNexus` instance.
-2. Provide feedback using the `provide_feedback` method.
-3. Get feedback using the `get_feedback` method.
-4. Check if the NLP model is trained using the `is_nlp_model_trained` method.
+To use Cloud Nexus, simply call the `validate_plan_against_patterns_and_benchmarks` function with your plan, architecture patterns, and cost benchmarks.
 
 ## Testing
-
-Run the tests using `pytest`.
+To run the tests, use the command `python -m pytest`.
