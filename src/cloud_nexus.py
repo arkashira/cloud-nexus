@@ -3,33 +3,34 @@ from dataclasses import dataclass
 from typing import List
 
 @dataclass
-class Pattern:
-    name: str
+class Requirement:
+    id: int
     description: str
 
 @dataclass
-class Project:
-    name: str
-    plan: str
-    validation_results: List[str] = None
+class ValidationResponse:
+    risk_score: int
+    suggestions: List[str]
 
 class CloudNexus:
     def __init__(self):
-        self.pattern_library = [
-            Pattern("Microservices", "A microservices architecture pattern"),
-            Pattern("Monolithic", "A monolithic architecture pattern")
-        ]
-        self.projects = {}
+        self.pitfalls = {
+            "pitfall1": "This is a known pitfall",
+            "pitfall2": "This is another known pitfall"
+        }
 
-    def validate_plan(self, project_name: str, plan: str) -> bool:
-        for pattern in self.pattern_library:
-            if pattern.name.lower() in plan.lower():
-                self.projects[project_name] = Project(project_name, plan)
-                self.projects[project_name].validation_results = ["Pass", f"Pattern {pattern.name} found"]
-                return True
-        self.projects[project_name] = Project(project_name, plan)
-        self.projects[project_name].validation_results = ["Fail", "No pattern found"]
-        return False
+    def validate(self, requirement: Requirement) -> ValidationResponse:
+        risk_score = 0
+        suggestions = []
+        for pitfall, description in self.pitfalls.items():
+            if pitfall in requirement.description:
+                risk_score += 10
+                suggestions.append(f"Avoid {pitfall} by {description}")
+        return ValidationResponse(risk_score, suggestions)
 
-    def get_validation_results(self, project_name: str) -> List[str]:
-        return self.projects.get(project_name, Project(project_name, "")).validation_results
+    def run_validation(self, requirements: List[Requirement]) -> List[ValidationResponse]:
+        responses = []
+        for requirement in requirements:
+            response = self.validate(requirement)
+            responses.append(response)
+        return responses
