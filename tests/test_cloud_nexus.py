@@ -1,33 +1,29 @@
 import pytest
-from cloud_nexus import CloudNexus, Requirement, ValidationResponse
+from cloud_nexus import validate_plan, generate_plan, ValidationReport
 
-def test_validate():
-    cloud_nexus = CloudNexus()
-    requirement = Requirement(1, "This requirement contains pitfall1")
-    response = cloud_nexus.validate(requirement)
-    assert response.risk_score == 10
-    assert response.suggestions == ["Avoid pitfall1 by This is a known pitfall"]
+def test_validate_plan_pass():
+    architecture_patterns = ["pattern1", "pattern2"]
+    cost_benchmarks = [100.0, 200.0]
+    plan = generate_plan("pattern1", 150.0)
+    report = validate_plan(architecture_patterns, cost_benchmarks, plan)
+    assert report.pass_flag
+    assert not report.report
+    assert not report.remediation_suggestions
 
-def test_run_validation():
-    cloud_nexus = CloudNexus()
-    requirements = [
-        Requirement(1, "This requirement contains pitfall1"),
-        Requirement(2, "This requirement contains pitfall2")
-    ]
-    responses = cloud_nexus.run_validation(requirements)
-    assert len(responses) == 2
-    assert responses[0].risk_score == 10
-    assert responses[1].risk_score == 10
+def test_validate_plan_fail_architecture():
+    architecture_patterns = ["pattern1", "pattern2"]
+    cost_benchmarks = [100.0, 200.0]
+    plan = generate_plan("pattern3", 150.0)
+    report = validate_plan(architecture_patterns, cost_benchmarks, plan)
+    assert not report.pass_flag
+    assert "Plan does not match any architecture pattern." in report.report
+    assert "Update plan to match one of the architecture patterns." in report.remediation_suggestions
 
-def test_validate_no_pitfalls():
-    cloud_nexus = CloudNexus()
-    requirement = Requirement(1, "This requirement contains no pitfalls")
-    response = cloud_nexus.validate(requirement)
-    assert response.risk_score == 0
-    assert response.suggestions == []
-
-def test_run_validation_empty():
-    cloud_nexus = CloudNexus()
-    requirements = []
-    responses = cloud_nexus.run_validation(requirements)
-    assert len(responses) == 0
+def test_validate_plan_fail_cost():
+    architecture_patterns = ["pattern1", "pattern2"]
+    cost_benchmarks = [100.0, 200.0]
+    plan = generate_plan("pattern1", 250.0)
+    report = validate_plan(architecture_patterns, cost_benchmarks, plan)
+    assert not report.pass_flag
+    assert "Plan exceeds maximum cost benchmark." in report.report
+    assert "Optimize plan to reduce cost." in report.remediation_suggestions
